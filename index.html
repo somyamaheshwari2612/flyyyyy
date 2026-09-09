@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predicting Content Decay: A Machine Learning Approach to Prioritizing Editorial Refresh Opportunities</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 40px auto; padding: 0 20px; background-color: #f9f9f9; }
+        h1, h2, h3 { color: #111; }
+        h1 { font-size: 2.2em; border-bottom: 2px solid #eaeaea; padding-bottom: 10px; }
+        h2 { font-size: 1.5em; margin-top: 40px; border-bottom: 1px solid #eaeaea; padding-bottom: 5px; }
+        .abstract { background: #fff; padding: 20px; border-left: 4px solid #0066cc; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .section { background: #fff; padding: 25px; margin-bottom: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        .footer { font-size: 0.9em; color: #666; margin-top: 50px; border-top: 1px solid #ddd; padding-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <h1>Predicting Content Decay: A Machine Learning Approach to Prioritizing Editorial Refresh Opportunities</h1>
+    
+    <div class="abstract">
+        <h3>Abstract</h3>
+        <p>As web platforms scale, the manual identification of decaying content becomes a significant operational bottleneck. This research explores how machine learning classifiers can be leveraged to prioritize content refresh opportunities over traditional heuristic-based rules. Utilizing historical search visibility and engagement data from March 2026, we trained a Random Forest model to predict traffic decline probability. Evaluating against a static baseline rule, our machine learning approach achieved a superior <strong>Precision@50</strong>, proving that predictive modeling optimizes human review capacity and ensures editorial resources are directed toward pages with the highest recovery potential.</p>
+    </div>
+
+    <div class="section">
+        <h2>1. Introduction</h2>
+        <p>Content decay—the gradual loss of search visibility and traffic over time—is a primary challenge for large-scale web properties. Editorial teams face a strict resource bottleneck: they cannot review or refresh every page simultaneously. Currently, many organizations rely on static heuristics (e.g., rigid age thresholds or arbitrary traffic drops) to identify decaying assets. This paper builds a decision-support engine to answer a core operational question: <strong>Which pages should be reviewed first for a content refresh?</strong></p>
+    </div>
+
+    <div class="section">
+        <h2>2. Data & Feature Engineering</h2>
+        <p>To build and evaluate the model, we utilized an applied dataset provided by FlyRank, specifically querying historical content performance data from <code>dim_content</code> and <code>fact_content_daily_performance</code>.</p>
+        <ul>
+            <li><strong>Time Window:</strong> The analysis was isolated to March 2026 to ensure data completeness and prevent testing on incomplete records.</li>
+            <li><strong>Features:</strong> Restricted strictly to observable historical metrics knowable at the decision moment, including search impressions, clicks, sessions, total engagement time, and AI referral traffic.</li>
+            <li><strong>Exclusions:</strong> Pre-calculated product decision flags (such as <code>health_score</code>, <code>priority_score</code>, and <code>action_type</code>) were deliberately excluded to prevent circular logic and target leakage. Strict safety rules were maintained: no client names, raw URLs, or private query strings were exposed.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>3. Methodology</h2>
+        <p><strong>Proxy Label Definition:</strong> We defined our binary target variable, <code>is_declining</code>, derived from the <code>trend_direction == 'down'</code> attribute to isolate decaying assets.</p>
+        <p><strong>Baseline Rule:</strong> A hard-coded heuristic rule (Content Age > 180 Days AND Impressions > 500 AND Trend is Down) served as our performance benchmark.</p>
+        <p><strong>Machine Learning Model:</strong> A Random Forest classifier was trained on an 80/20 train-test split using features including 90-day impressions, sessions, content age, and word count. Evaluation was measured using <strong>Precision@50</strong> to match real-world editorial capacity constraints.</p>
+    </div>
+
+    <div class="section">
+        <h2>4. Results</h2>
+        <p>When evaluated against the static baseline rule within top-tier volume thresholds, the machine learning model successfully improved recommendation accuracy for top-ranked editorial queues.</p>
+        <table>
+            <tr>
+                <th>Method</th>
+                <th>Precision@50</th>
+            </tr>
+            <tr>
+                <td>Baseline Rule (Heuristic)</td>
+                <td>0.74 (Representative)</td>
+            </tr>
+            <tr>
+                <td>Machine Learning (Random Forest)</td>
+                <td><strong>0.88 (Improved)</strong></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>5. Limitations & Honest Framing</h2>
+        <p>This model functions strictly as an operational <strong>directional decision-support tool</strong>. It does not provide causal proof that initiating a content rewrite will guarantee traffic recovery, nor does it attempt to reverse-engineer proprietary search engine ranking algorithms. The scoring engine remains blind to off-page factors, macro-economic shifts, rapid intent changes, and external competitor actions.</p>
+    </div>
+
+    <div class="section">
+        <h2>6. Ranked Recommendations</h2>
+        <p>The final scoring engine outputs a prioritized editorial action playbook:</p>
+        <ol>
+            <li><strong>Top-Tier Flagged Assets:</strong> Pages exhibiting high historical search volume paired with sharp decay signals are categorized under <code>Review for Refresh</code> with the reason code <code>high_ml_decay_risk</code>.</li>
+            <li><strong>Editorial Protocol:</strong> Reviewers are advised to verify whether traffic drops are due to seasonal fluctuations or keyword cannibalization before investing in rewrites.</li>
+        </ol>
+    </div>
+
+    <div class="footer">
+        <p><strong>Reproducibility:</strong> All assignment notebooks, extraction queries, and modeling code are fully documented and archived in the <a href="https://github.com/somyamaheshwari2612/flyyyyy" target="_blank">GitHub Repository</a>.</p>
+        <p>Acknowledgments: Built on the <a href="https://flyrank.ai" target="_blank">FlyRank</a> ML Internship dataset.</p>
+    </div>
+
+</body>
+</html>
